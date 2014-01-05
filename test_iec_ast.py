@@ -80,3 +80,28 @@ def test_function_expression():
 
     retval = e.run_function(gf, [arg1, arg2])
     assert retval.as_int() == 5
+
+
+def test_function_variable_expression():
+    args_input = [
+        iec_arg("a", "integer"),
+        iec_arg("b", "integer"),
+    ]
+    args = [iec_args_input(args_input)]
+    statements = [
+        iec_statement_return(
+            iec_binary_operator("+", iec_variable('a'), iec_variable('b'))),
+    ]
+    f = iec_function("my_func", "integer", args, statements)
+
+    c = context()
+    c.module = Module.new('my_module')
+    v = f.generate_code(c)
+
+    gf = c.module.get_function_named("my_func")
+    arg1 = GenericValue.int(Type.int(), 1)
+    arg2 = GenericValue.int(Type.int(), 2)
+    e = ExecutionEngine.new(c.module)
+
+    retval = e.run_function(gf, [arg1, arg2])
+    assert retval.as_int() == 3

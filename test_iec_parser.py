@@ -45,6 +45,19 @@ def test_args_input():
     assert a.args[1].type_string == 'integer'
 
 
+def test_expression():
+    p = Parser()
+    e = p.expression("#3")
+    assert isinstance(e, iec_val)
+    assert e.val == "3"
+    e = p.expression("a")
+    assert isinstance(e, iec_variable)
+    assert e.variable == "a"
+    e = p.expression("#2+#2")
+    assert isinstance(e, iec_binary_operator)
+    assert e.op == "+"
+
+
 def test_function():
     p = Parser()
     f = p.function("""
@@ -54,16 +67,6 @@ def test_function():
     assert isinstance(f, iec_function)
     assert f.name == "hoge"
     assert f.type_string == "integer"
-
-
-def test_expression():
-    p = Parser()
-    e = p.expression("#3")
-    assert isinstance(e, iec_val)
-    assert e.val == "3"
-    e = p.expression("#2+#2")
-    assert isinstance(e, iec_binary_operator)
-    assert e.op == "+"
 
 
 def test_statement():

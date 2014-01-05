@@ -15,16 +15,19 @@ ArgsInput = CaselessKeyword('var_input') + \
 ArgsInput.setParseAction(lambda ts: iec_args_input(ts['Args']))
 
 ArgsLocal = CaselessKeyword('var') + \
-    Group(OneOrMore(Arg)).setResultsName('Args') + \
+    Group(OneOrMore(Arg)) + \
     CaselessKeyword('end_var')
-ArgsLocal.setParseAction(lambda ts: iec_args_local(ts['Args']))
+ArgsLocal.setParseAction(lambda ts: iec_args_local(ts[1]))
 
 Args = ArgsInput | ArgsLocal
 
 ConstantVal = Literal('#') + Word(nums)
 ConstantVal.setParseAction(lambda ts: iec_val(ts[1]))
 
-Term = ConstantVal
+Variable = Word(alphas)
+Variable.setParseAction(lambda ts: iec_variable(ts[0]))
+
+Term = ConstantVal | Variable
 
 SignOpe = oneOf('+ -')
 MultOpe = oneOf('* /')
@@ -45,9 +48,11 @@ ReturnStatement = Keyword('return') + Expression + Literal(';')
 ReturnStatement.setParseAction(
     lambda ts: iec_statement_return(ts[1]))
 
-AssignmentStatement = Expression.setResultsName('Exp')
+AssignmentStatement = Variable + \
+    Word(':=') + \
+    Expression + Literal(';')
 AssignmentStatement.setParseAction(
-    lambda ts: iec_statement_return(ts['Exp']))
+    lambda ts: iec_statement_assign(ts[0], ts[1]))
 
 Statement = ReturnStatement | AssignmentStatement
 
