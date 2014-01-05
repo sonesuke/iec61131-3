@@ -1,0 +1,17 @@
+
+
+class iec_function:
+
+    def __init__(self, name, type_string, args):
+        self.name = name
+        self.type_string = type_string
+        self.args = args
+
+
+class iec_arg:
+
+    def __init__(self, name, type_string, inout):
+        self.name = name
+        self.type_string = type_string
+        self.inout = inout
+
