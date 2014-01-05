@@ -15,16 +15,68 @@ def test_function():
         iec_arg("d", "integer"),
     ]
     args = [iec_args_input(args_input), iec_args_local(args_local)]
-    f = iec_function("my_func", "integer", args)
+    statements = [
+        iec_statement_return(iec_val(3))
+    ]
+    f = iec_function("my_func", "integer", args, statements)
 
-    m = Module.new('my_module')
-    v = f.generate_code(m)
+    c = context()
+    c.module = Module.new('my_module')
+    v = f.generate_code(c)
 
-    gf = m.get_function_named("my_func")
+    gf = c.module.get_function_named("my_func")
 
-    e = ExecutionEngine.new(m)
+    e = ExecutionEngine.new(c.module)
     arg1 = GenericValue.int(Type.int(), 1)
     arg2 = GenericValue.int(Type.int(), 2)
 
     retval = e.run_function(gf, [arg1, arg2])
     assert retval.as_int() == 3
+
+
+def test_function_expression():
+    args_input = [
+        iec_arg("a", "integer"),
+        iec_arg("b", "integer"),
+    ]
+    args = [iec_args_input(args_input)]
+    statements = [
+        iec_statement_return(iec_binary_operator("+", iec_val(2), iec_val(3))),
+    ]
+    f = iec_function("my_func", "integer", args, statements)
+
+    c = context()
+    c.module = Module.new('my_module')
+    v = f.generate_code(c)
+
+    gf = c.module.get_function_named("my_func")
+    arg1 = GenericValue.int(Type.int(), 1)
+    arg2 = GenericValue.int(Type.int(), 2)
+    e = ExecutionEngine.new(c.module)
+
+    retval = e.run_function(gf, [arg1, arg2])
+    assert retval.as_int() == 5
+
+
+def test_function_expression():
+    args_input = [
+        iec_arg("a", "integer"),
+        iec_arg("b", "integer"),
+    ]
+    args = [iec_args_input(args_input)]
+    statements = [
+        iec_statement_return(iec_binary_operator("+", iec_val(2), iec_val(3))),
+    ]
+    f = iec_function("my_func", "integer", args, statements)
+
+    c = context()
+    c.module = Module.new('my_module')
+    v = f.generate_code(c)
+
+    gf = c.module.get_function_named("my_func")
+    arg1 = GenericValue.int(Type.int(), 1)
+    arg2 = GenericValue.int(Type.int(), 2)
+    e = ExecutionEngine.new(c.module)
+
+    retval = e.run_function(gf, [arg1, arg2])
+    assert retval.as_int() == 5

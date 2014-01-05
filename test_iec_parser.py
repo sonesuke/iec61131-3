@@ -56,6 +56,24 @@ def test_function():
     assert f.type_string == "integer"
 
 
+def test_expression():
+    p = Parser()
+    e = p.expression("#3")
+    assert isinstance(e, iec_val)
+    assert e.val == "3"
+    e = p.expression("#2+#2")
+    assert isinstance(e, iec_binary_operator)
+    assert e.op == "+"
+
+
+def test_statement():
+    p = Parser()
+    s = p.statement("return #3;")
+    assert isinstance(s, iec_statement_return)
+    assert isinstance(s.expression, iec_val)
+    assert s.expression.val == "3"
+
+
 def test_function_with_arg():
     p = Parser()
     f = p.function("""
@@ -63,7 +81,7 @@ def test_function_with_arg():
             var_input
                 a : integer;
             end_var
-
+            return #3;
             end_function
             """)
     assert isinstance(f, iec_function)
